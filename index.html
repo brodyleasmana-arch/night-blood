@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Night Blood — Cerita Horor & Kisah Terlarang</title>
+  <meta name="description" content="Night Blood adalah blog cerita horor berisi kisah misteri, pengalaman gelap, urban legend, dan cerita terlarang yang ditulis dengan gaya santai dan realistis.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Night Blood — Cerita Horor & Kisah Terlarang">
+  <meta property="og:description" content="Kumpulan cerita horor, kisah misteri, dan pengalaman gelap yang diceritakan dari berbagai sudut pandang.">
+  <meta property="og:type" content="website">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- STEP 5: Firebase SDK (WAJIB) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter',sans-serif;background:radial-gradient(circle at top,#0b0b0b,#000);color:#e5e5e5}
+    header{padding:120px 20px 90px;text-align:center;background:linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.9)),url('https://i.pinimg.com/1200x/9a/b9/4a/9ab94ac4a07fde60f1c8e587e21164b9.jpg') center/cover no-repeat;border-bottom:1px solid #300}
+    header h1{font-family:'Creepster',cursive;font-size:3rem;color:#ff2e2e;margin:0}
+    header p{color:#b91c1c}
+    nav{display:flex;justify-content:center;gap:30px;padding:15px;background:#000;border-bottom:1px solid #300}
+    nav a{color:#fca5a5;cursor:pointer;font-weight:600}
+    nav a:hover{color:#ff2e2e}
+    .controls{max-width:900px;margin:30px auto;padding:0 20px;display:none;gap:10px}
+    .controls input,.controls button{padding:14px;background:#000;border:1px solid #300;color:#fff;border-radius:8px}
+    .controls button{cursor:pointer}
+    .container{max-width:1100px;margin:40px auto 80px;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px}
+    .post{background:#050505;border:1px solid #300;border-radius:14px;padding:30px;cursor:pointer}
+    .post h2{color:#ff4d4d;margin-top:0}
+    .post small{color:#9f1239}
+    .detail,.about{max-width:900px;margin:50px auto;padding:50px;background:#000;border:1px solid #300;border-radius:18px;display:none;line-height:1.9}
+    body.focus-mode header,body.focus-mode nav,body.focus-mode footer{display:none}
+    body.focus-mode .detail{max-width:760px;margin:40px auto;font-size:1.05rem}
+    .genre-tag{display:inline-block;margin:12px 0 25px;padding:6px 14px;border-radius:20px;background:#2a0000;color:#ff9a9a;font-size:.8rem}
+    .story p{margin-bottom:20px}
+    .dialog{color:#fca5a5;font-style:italic;margin-left:10px}
+    .back{color:#fca5a5;cursor:pointer;margin-bottom:20px;display:inline-block}
+    footer{text-align:center;padding:40px;border-top:1px solid #300;color:#7f1d1d}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Night Blood</h1>
+  <p>Cerita terlarang dan kisah yang tidak ingin kamu alami</p>
+</header>
+<nav>
+  <a onclick="showHome()">Home</a>
+  <a onclick="showArticles()">Artikel</a>
+  <a onclick="showAbout()">Tentang</a>
+</nav>
+
+<div class="controls" id="searchBox">
+  <input id="searchInput" placeholder="Cari judul atau kata kunci..." />
+  <button onclick="doSearch()">Cari</button>
+</div>
+
+<div class="container" id="postList"></div>
+<div class="detail" id="detail"></div>
+<div class="about" id="about"></div>
+
+<footer>© 2026 Night Blood</footer>
+
+<script>
+// ================================
+// STEP 5: Inisialisasi Firebase
+// ================================
+const firebaseConfig = {
+    apiKey: "AIzaSyDD1bObFhm_TGpeUlSBrAMiuA-CLmYVEp8",
+    authDomain: "night-blood-d5c71.firebaseapp.com",
+    projectId: "night-blood-d5c71",
+    storageBucket: "night-blood-d5c71.firebasestorage.app",
+    messagingSenderId: "784702220242",
+    appId: "1:784702220242:web:c94c1eb6b799da934e0a0b",
+    measurementId: "G-1YM0989K09"
+  };
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ================================
+// STEP 6: Ambil data dari Firestore
+// ================================
+let posts = [];
+
+async function loadPosts(){
+  const snapshot = await db.collection('posts')
+    .where('published','==',true)
+    .orderBy('created_at','desc')
+    .get();
+
+  posts = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
+  showHome();
+}
+
+// ================================
+// Tampilan & Navigasi
+// ================================
+const postList=document.getElementById('postList');
+const detail=document.getElementById('detail');
+const about=document.getElementById('about');
+const searchBox=document.getElementById('searchBox');
+
+function hideAll(){
+  postList.style.display='none';
+  detail.style.display='none';
+  about.style.display='none';
+  searchBox.style.display='none';
+  document.body.classList.remove('focus-mode');
+}
+
+function render(list){
+  postList.innerHTML='';
+  list.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='post';
+    d.innerHTML=`<h2>${p.title}</h2><small>${p.created_at?.toDate?.().toLocaleDateString('id-ID') || ''}</small><p>${p.excerpt}</p>`;
+    d.onclick=()=>showDetail(p);
+    postList.appendChild(d);
+  });
+}
+
+function showHome(){
+  hideAll();
+  searchBox.style.display='flex';
+  postList.style.display='grid';
+  render(posts.slice(0,4));
+}
+
+function showArticles(){
+  hideAll();
+  postList.style.display='grid';
+  render(posts);
+}
+
+function showAbout(){
+  hideAll();
+  about.style.display='block';
+  about.innerHTML=`<h2>Tentang Night Blood</h2><p><strong>Night Blood</strong> adalah blog cerita horor yang dibuat sebagai ruang arsip pengalaman gelap, kisah terlarang, dan cerita yang sering hanya berani diceritakan di malam hari.</p><p>Setiap cerita diambil dari sudut pandang berbeda, lokasi berbeda, dan kejadian berbeda agar terasa nyata.</p><h3>Kontak</h3><p>Email: <a href="mailto:nightblood.story@gmail.com" style="color:#fca5a5">nightblood.story@gmail.com</a></p><h3>Hak Cipta</h3><p>© 2026 Night Blood. Seluruh cerita dilindungi hak cipta.</p>`;
+}
+
+// ================================
+// STEP 7: Search TANPA DUPLIKAT
+// ================================
+function doSearch(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  if(!q){ showHome(); return; }
+
+  const results = posts.filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    p.excerpt.toLowerCase().includes(q)
+  );
+
+  hideAll();
+  searchBox.style.display='flex';
+  postList.style.display='grid';
+  render(results);
+}
+
+function showDetail(p){
+  hideAll();
+  detail.style.display='block';
+  detail.innerHTML=`<span class="back" onclick="showArticles()">← Kembali</span><button id="focusBtn" onclick="toggleFocus()" style="float:right;background:#120000;border:1px solid #300;color:#fca5a5;padding:8px 14px;border-radius:20px;cursor:pointer">Mode Fokus: OFF</button><h2>${p.title}</h2><div class="genre-tag">${p.genre}</div><div class="story">${p.content}</div>`;
+}
+
+function toggleFocus(){
+  const btn=document.getElementById('focusBtn');
+  document.body.classList.toggle('focus-mode');
+  btn.textContent=document.body.classList.contains('focus-mode')?'Mode Fokus: ON':'Mode Fokus: OFF';
+}
+
+// Enter untuk search
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+
+// Jalankan
+loadPosts();
+</script>
+</body>
+</html>
