@@ -60,6 +60,7 @@
 <div class="container" id="postList"></div>
 <div class="detail" id="detail"></div>
 <div class="about" id="about"></div>
+<div class="about" id="privacy" style="display:none"></div>
 
 <footer>© 2026 Night Blood</footer>
 
@@ -142,7 +143,14 @@ function showArticles(){
 function showAbout(){
   hideAll();
   about.style.display='block';
-  about.innerHTML=`<h2>Tentang Night Blood</h2><p><strong>Night Blood</strong> adalah blog cerita horor yang dibuat sebagai ruang arsip pengalaman gelap, kisah terlarang, dan cerita yang sering hanya berani diceritakan di malam hari.</p><p>Setiap cerita diambil dari sudut pandang berbeda, lokasi berbeda, dan kejadian berbeda agar terasa nyata.</p><h3>Kontak</h3><p>Email: <a href="mailto:nightblood.story@gmail.com" style="color:#fca5a5">nightblood.story@gmail.com</a></p><h3>Hak Cipta</h3><p>© 2026 Night Blood. Seluruh cerita dilindungi hak cipta.</p>`;
+  about.innerHTML=`<h2>Tentang Night Blood</h2><p><strong>Night Blood</strong> adalah blog cerita horor yang dibuat sebagai ruang arsip pengalaman gelap, kisah terlarang, dan cerita yang sering hanya berani diceritakan di malam hari.</p><p>Setiap cerita diambil dari sudut pandang berbeda, lokasi berbeda, dan kejadian berbeda agar terasa nyata.</p><h3>Kontak</h3><p>Email: <a href="mailto:nightblood.story@gmail.com" style="color:#fca5a5">nightblood.story@gmail.com</a></p><p><a onclick="showPrivacy()" style="color:#fca5a5;cursor:pointer">Kebijakan Privasi</a></p><h3>Hak Cipta</h3><p>© 2026 Night Blood. Seluruh cerita dilindungi hak cipta.</p>`;
+}
+
+function showPrivacy(){
+  hideAll();
+  const p=document.getElementById('privacy');
+  p.style.display='block';
+  p.innerHTML=`<span class="back" onclick="showAbout()">← Kembali</span><h2>Kebijakan Privasi</h2><p>Night Blood menghargai privasi pengunjung dan berkomitmen untuk melindungi informasi yang dikumpulkan selama penggunaan situs ini.</p><p>Kami tidak meminta data pribadi secara langsung. Informasi non-pribadi seperti alamat IP, jenis browser, dan halaman yang dikunjungi dapat dikumpulkan secara otomatis untuk keperluan analisis dan peningkatan kualitas situs.</p><p>Night Blood dapat menggunakan cookie untuk menyimpan preferensi pengunjung dan menampilkan konten atau iklan yang relevan, termasuk iklan dari pihak ketiga seperti Google AdSense.</p><p>Pihak ketiga, termasuk Google, dapat menggunakan cookie untuk menayangkan iklan berdasarkan kunjungan pengguna ke situs ini dan situs lain di internet.</p><p>Pengunjung dapat memilih untuk menonaktifkan cookie melalui pengaturan browser masing-masing.</p><p>Situs ini mungkin berisi tautan ke situs eksternal. Kami tidak bertanggung jawab atas kebijakan privasi situs pihak ketiga tersebut.</p><p>Night Blood tidak ditujukan untuk anak-anak di bawah usia 13 tahun dan tidak secara sadar mengumpulkan informasi pribadi dari anak-anak.</p><p>Kebijakan privasi ini dapat diperbarui sewaktu-waktu tanpa pemberitahuan sebelumnya.</p><p>Dengan menggunakan situs Night Blood, pengunjung dianggap telah menyetujui kebijakan privasi ini.</p><p>Jika ada pertanyaan terkait kebijakan privasi, silakan hubungi: <a href="mailto:nightblood.story@gmail.com" style="color:#fca5a5">nightblood.story@gmail.com</a></p><p>© 2026 Night Blood</p>`;
 }
 
 // ================================
